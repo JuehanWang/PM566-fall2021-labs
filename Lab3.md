@@ -218,7 +218,7 @@ head(met2)
     ## 5:            9        NA            9 NA
     ## 6:            9        NA            9 NA
 
-The highest weather station is at 4113 ft.
+The highest weather station is at 4113 mts.
 
 ### 5. Check the data against an external data source.
 
