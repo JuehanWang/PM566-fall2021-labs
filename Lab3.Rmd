@@ -104,21 +104,3 @@ hist(met$elev, breaks=100)
 hist(met$temp)
 hist(met$wind.sp)
 ```
-
-Look at where the weather station with highest elevation is located.
-
-```{r}
-leaflet(elev) %>%
-  addProviderTiles('OpenStreetMap') %>% 
-  addCircles(lat=~lat,lng=~lon, opacity=1, fillOpacity=1, radius=100)
-```
-
-Look at the time series of temperature and wind speed at this location. 
-
-```{r}
-elev$date <- with(elev, ymd_h(paste(year, month, day, hour, sep= ' ')))
-summary(elev$date)
-
-elev <- elev[order(date)]
-head(elev)
-```

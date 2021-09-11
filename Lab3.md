@@ -5,6 +5,41 @@ Juehan Wang
 
 ### 1. Read the data
 
+``` r
+# Install it only if it doesn't exist
+if (!require(data.table)){      # if the package exists, it will be TRUE
+  install.packages("data.table")
+}
+```
+
+    ## Loading required package: data.table
+
+    ## 
+    ## Attaching package: 'data.table'
+
+    ## The following objects are masked from 'package:lubridate':
+    ## 
+    ##     hour, isoweek, mday, minute, month, quarter, second, wday, week,
+    ##     yday, year
+
+    ## The following objects are masked from 'package:dplyr':
+    ## 
+    ##     between, first, last
+
+``` r
+# Only download the data if it doesn't exist
+if (!file.exists("met_all.gz")){
+  download.file(
+    "https://raw.githubusercontent.com/USCbiostats/data-science-data/master/02_met/met_all.gz",
+    "met_all.gz",
+    method="libcurl",
+    timeout = 60
+    )
+}
+
+met <- data.table::fread("met_all.gz")
+```
+
 ### 2. Check the dimensions, headers, footers.
 
 ``` r
@@ -288,28 +323,20 @@ met[elev == max(elev, na.rm = TRUE), .(
 
 ### 7. Exploratory graphs
 
-leaflet(met$elev) %&gt;% addProviderTiles(‘OpenStreetMap’) %&gt;%
-addCircles(lat=<sub>lat,lng=</sub>lon, opacity=1, fillOpacity=1,
-radius=100)
+``` r
+hist(met$elev, breaks=100)
+```
 
-hist(met*e**l**e**v*, *b**r**e**a**k**s* = 100)*h**i**s**t*(*m**e**t*temp)
+![](Lab3_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+``` r
+hist(met$temp)
+```
+
+![](Lab3_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
+
+``` r
 hist(met$wind.sp)
+```
 
-# Look at where the weather station with highest elevation is located.
-
-elev*d**a**t**e* &lt;  − *w**i**t**h*(*e**l**e**v*, *y**m**d*<sub>*h*</sub>(*p**a**s**t**e*(*y**e**a**r*, *m**o**n**t**h*, *d**a**y*, *h**o**u**r*, *s**e**p* = ′′)))*s**u**m**m**a**r**y*(*e**l**e**v*date)
-\# Look at the time series of temperature and wind speed at this
-location.
-
-elev &lt;- elev\[order(date)\] head(elev)
-
-plot(elev*d**a**t**e*, *e**l**e**v*temp, type=‘l’)
-plot(elev*d**a**t**e*, *e**l**e**v*wind.sp, type=‘l’)
-
-git commit -a -m “Updating elevation” git push
-
-git commit -a -m “Adding histogram” git push
-
-git add
-
-git commit -a -m “Adding missing figure https:…/issue/40” git push
+![](Lab3_files/figure-gfm/unnamed-chunk-9-3.png)<!-- -->
