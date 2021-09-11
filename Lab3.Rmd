@@ -19,7 +19,7 @@ library(lubridate)
 
 ### 1. Read the data
 
-```{r download, include=FALSE}
+```{r}
 # Install it only if it doesn't exist
 if (!require(data.table)){      # if the package exists, it will be TRUE
   install.packages("data.table")
@@ -95,4 +95,30 @@ met[elev == max(elev, na.rm = TRUE), .(
   wind_day = cor(wind.sp, day, use="complete"),
   wind_hour = cor(wind.sp, hour, use="complete")
 )]
+```
+
+### 7. Exploratory graphs
+
+```{r}
+hist(met$elev, breaks=100)
+hist(met$temp)
+hist(met$wind.sp)
+```
+
+Look at where the weather station with highest elevation is located.
+
+```{r}
+leaflet(elev) %>%
+  addProviderTiles('OpenStreetMap') %>% 
+  addCircles(lat=~lat,lng=~lon, opacity=1, fillOpacity=1, radius=100)
+```
+
+Look at the time series of temperature and wind speed at this location. 
+
+```{r}
+elev$date <- with(elev, ymd_h(paste(year, month, day, hour, sep= ' ')))
+summary(elev$date)
+
+elev <- elev[order(date)]
+head(elev)
 ```
