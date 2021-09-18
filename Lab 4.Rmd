@@ -36,9 +36,9 @@ met <- data.table::fread("met_all.gz")
 ## 2. Prepare the data
 
 ```{r data-prep, cache=TRUE}
-#Remove temperatures less than -17C
+# Remove temperatures less than -17C
 met <- met[met$temp >= -17]
-#Make sure there are no missing data in the key variables coded as 9999, 999, etc
+# Make sure there are no missing data in the key variables coded as 9999, 999, etc
 met[,range(temp,na.rm = TRUE)]
 met[,range(rh,na.rm = TRUE)]
 met[,range(wind.sp,na.rm = TRUE)]
@@ -50,15 +50,15 @@ met[,range(elev,na.rm = TRUE)]
 
 met[elev == 9999.0, elev :=NA]
 
-#Generate a date variable using the functions as.Date() (hint: You will need the following to create a date paste(year, month, day, sep = "-")).
+# Generate a date variable using the functions as.Date() (hint: You will need the following to create a date paste(year, month, day, sep = "-")).
 met[, ymd := as.Date(paste(met$year, met$month, met$day, sep = "-"))]
 
 met[,table(week(ymd))]
 
-#Using the data.table::week function, keep the observations of the first week of the month.
+# Using the data.table::week function, keep the observations of the first week of the month.
 met <- met[week(ymd) ==31]
 
-#Compute the mean by station of the variables temp, rh, wind.sp, vis.dist, dew.point, lat, lon, and elev.
+# Compute the mean by station of the variables temp, rh, wind.sp, vis.dist, dew.point, lat, lon, and elev.
 met_avg <- met[,.(
   temp      = mean(temp,na.rm=TRUE),
   rh        = mean(rh,na.rm=TRUE),
@@ -70,62 +70,79 @@ met_avg <- met[,.(
   elev      = mean(elev,na.rm=TRUE)
 ), by=c("USAFID")]
 
-#Create a region variable for NW, SW, NE, SE based on lon = -98.00 and lat = 39.71 degrees
+# Create a region variable for NW, SW, NE, SE based on lon = -98.00 and lat = 39.71 degrees
 met_avg[lat >= 39.71 & lon <= -98, region := "Northwest"]
-met_avg[lat < 39.71 & lon <= -98, region := "Sorthwest"]
+met_avg[lat < 39.71 & lon <= -98, region := "Southwest"]
 met_avg[lat >= 39.71 & lon > -98, region := "Northeast"]
-met_avg[lat < 39.71 & lon > -98, region := "Sortheast"]
+met_avg[lat < 39.71 & lon > -98, region := "Southeast"]
 
 met_avg[, region2 := fifelse(lat >= 39.71 & lon <= -98, "Northwest",
-        fifelse(lat < 39.71 & lon <= -98, "Sorthwest",
+        fifelse(lat < 39.71 & lon <= -98, "Southwest",
                 fifelse(lat >= 39.71 & lon > -98, "Northeast",
-                        fifelse(lat < 39.71 & lon > -98, "Sortheast", NA_character_))))]
+                        fifelse(lat < 39.71 & lon > -98, "Southeast", NA_character_))))]
 
 met_avg[, table(region, useNA = "always")]
 
-#Create a categorical variable for elevation as in the lecture slides
+# Create a categorical variable for elevation as in the lecture slides
 met_avg[, elev_cat := fifelse(elev > 252, "high", "low")]
 ```
 
 ## 3. Use geom_violin to examine the wind speed and dew point temperature by region
 
 ```{r violin-temp}
-#You saw how to use geom_boxplot in class. Try using geom_violin instead (take a look at the help). (hint: You will need to set the x aesthetic to 1)
+# You saw how to use geom_boxplot in class. Try using geom_violin instead (take a look at the help). (hint: You will need to set the x aesthetic to 1)
 
-#Use facets
-#Make sure to deal with NA category
-#Describe what you observe in the graph
-ggplot(met_avg, mapping = aes(y = wind.sp, x = 1)) +
+# Use facets
+# Make sure to deal with NA category
+# Describe what you observe in the graph
+met_avg[!is.na(wind.sp) & !is.na(temp)] %>%
+ggplot(met_avg, mapping = aes(y = wind.sp, x = temp)) +
   geom_violin() +
   facet_grid(~region)
 ```
 
+From the plot we can see that the dew point temperature in southeast is the highest while that in southwest is the lowest and it also has the widest range. Meanwhile, the southwest has the largest wind speed while the southeast has the smallest.
+
 ## 4. Use geom_jitter with stat_smooth to examine the association between dew point temperature and wind speed by region
 
 ```{r geom_jitter-stat_smooth}
-#Colour points by region
-#Make sure to deal with NA category
-#Fit a linear regression line by region
-#Describe what you observe in the graph
+# Colour points by region
+# Make sure to deal with NA category
+# Fit a linear regression line by region
+# Describe what you observe in the graph
 met_avg[!is.na(wind.sp) & !is.na(dew.point)] %>%
   ggplot(mapping = aes(x = dew.point, y = wind.sp, color = region, linetype = region)) + 
   geom_jitter() + 
   stat_smooth(formula = y~x, method = lm, se = FALSE, col = "black")
 ```
 
+
+
+
 ## 5. Use geom_bar to create barplots of the weather stations by elevation category coloured by region
 
 ```{r geom_bar}
+# Bars by elevation category using position="dodge"
+# Change colours from the default. Colour by region using scale_fill_brewer see this
+# Create nice labels on axes and add a title
+# Describe what you observe in the graph
+# Make sure to deal with NA
 met_avg[!is.na(elev_cat) & elev_cat != "clear"] %>%
   ggplot() + 
   geom_bar(mapping = aes(x = elev_cat, fill = region), position = "dodge")
 ```
 
+
+
 ## 6. Use stat_summary to examine mean dew point and wind speed by region with standard deviation error bars
 
 ```{r plot-sumstat}
-#Make sure to remove NA
-#Use fun.data=“mean_sdl” in stat_summary
+# Make sure to remove NA
+# Use fun.data=“mean_sdl” in stat_summary
+# Add another layer of stats_summary but change the geom to "errorbar" (see the help).
+# Describe the graph and what you observe
+# Dew point temperature is…
+# Wind speed is…
 ggplot(
   met_avg[!is.na(wind.sp) & !is.na(dew.point)],
   mapping = aes(x = region, y = wind.sp)) +
@@ -133,13 +150,15 @@ ggplot(
   stat_summary(fun.data = "mean_sdl", geom = "errorbar")
 ```
 
+
+
 ## 7. Make a map showing the spatial trend in relative h in the US
 
 ```{r spatial-trend}
-#Add another layer of stats_summary but change the geom to "errorbar" (see the help).
-#Describe the graph and what you observe
-#Dew point temperature is…
-#Wind speed is…
+# Add another layer of stats_summary but change the geom to "errorbar" (see the help).
+# Describe the graph and what you observe
+# Dew point temperature is…
+# Wind speed is…
 temp.pal <- colorNumeric(c('darkgreen','goldenrod','brown'), domain=met_avg$rh)
 
 leaflet(met_avg) %>%
@@ -154,4 +173,5 @@ leaflet(met_avg) %>%
   addLegend('bottomleft', pal=temp.pal, values=met_avg$rh,
           title='Temperature, C', opacity=1)
 ```
+
 
