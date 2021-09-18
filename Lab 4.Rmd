@@ -19,7 +19,10 @@ library(ggplot2)
 library(Hmisc)
 ```
 
+## 1. Read in the data
+
 ```{r data-read, include = FALSE, cache = TRUE}
+# First download and then read in with data.table:fread()
 if (!file.exists("met_all.gz"))
   download.file(
     url = "https://raw.githubusercontent.com/USCbiostats/data-science-data/master/02_met/met_all.gz",
@@ -99,7 +102,7 @@ ggplot(met_avg, mapping = aes(y = wind.sp, x = 1)) +
 
 ## 4. Use geom_jitter with stat_smooth to examine the association between dew point temperature and wind speed by region
 
-```{r}
+```{r geom_jitter-stat_smooth}
 #Colour points by region
 #Make sure to deal with NA category
 #Fit a linear regression line by region
@@ -112,7 +115,7 @@ met_avg[!is.na(wind.sp) & !is.na(dew.point)] %>%
 
 ## 5. Use geom_bar to create barplots of the weather stations by elevation category coloured by region
 
-```{r}
+```{r geom_bar}
 met_avg[!is.na(elev_cat) & elev_cat != "clear"] %>%
   ggplot() + 
   geom_bar(mapping = aes(x = elev_cat, fill = region), position = "dodge")
@@ -132,7 +135,7 @@ ggplot(
 
 ## 7. Make a map showing the spatial trend in relative h in the US
 
-```{r}
+```{r spatial-trend}
 #Add another layer of stats_summary but change the geom to "errorbar" (see the help).
 #Describe the graph and what you observe
 #Dew point temperature is…
