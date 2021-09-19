@@ -149,7 +149,7 @@ ggplot(
   stat_summary(fun.data = "mean_sdl", geom = "errorbar")
 ```
 
-Wind speed is about 3.2(\pm4) m/s in Southwest, 2.8(\pm 3.2) m/s in Northwest, 1.7(\pm 3.3) m/s in Northeast and 1.8(\pm 3.4) m/s in Southeast.
+Wind speed is about 3.2($\pm$4) m/s in Southwest, 2.8($\pm$3.2) m/s in Northwest, 1.7($\pm$3.3) m/s in Northeast and 1.8($\pm$3.4) m/s in Southeast.
 
 ## 7. Make a map showing the spatial trend in relative h in the US
 
