@@ -116,14 +116,13 @@ met_avg[!is.na(wind.sp) & !is.na(dew.point)] %>%
   stat_smooth(formula = y~x, method = lm, se = FALSE, col = "black")
 ```
 
-
-
+It seems that there is only slightly positive association between dew point temperature and wind speed in Southeast, and there seems no association in the other three regions.
 
 ## 5. Use geom_bar to create barplots of the weather stations by elevation category coloured by region
 
 ```{r geom_bar}
 # Bars by elevation category using position="dodge"
-# Change colours from the default. Colour by region using scale_fill_brewer see this
+# Change colors from the default. Color by region using scale_fill_brewer see this
 # Create nice labels on axes and add a title
 # Describe what you observe in the graph
 # Make sure to deal with NA
@@ -132,7 +131,7 @@ met_avg[!is.na(elev_cat) & elev_cat != "clear"] %>%
   geom_bar(mapping = aes(x = elev_cat, fill = region), position = "dodge")
 ```
 
-
+In high elevation category, Northeast has the most weather stations while Northwest has the least. In low elevation category, Southeast has the most weather stations while Northwest has the least.
 
 ## 6. Use stat_summary to examine mean dew point and wind speed by region with standard deviation error bars
 
@@ -150,7 +149,7 @@ ggplot(
   stat_summary(fun.data = "mean_sdl", geom = "errorbar")
 ```
 
-
+Wind speed is about 3.2(\pm4) m/s in Southwest, 2.8(\pm 3.2) m/s in Northwest, 1.7(\pm 3.3) m/s in Northeast and 1.8(\pm 3.4) m/s in Southeast.
 
 ## 7. Make a map showing the spatial trend in relative h in the US
 
@@ -174,4 +173,4 @@ leaflet(met_avg) %>%
           title='Temperature, C', opacity=1)
 ```
 
-
+There is an obvious trend of increasing in rh from the east to the west in the US, and rh is also higher along the coastline. Rh in the east is higher than 60 while it is mostly lower than 60 in the west.
