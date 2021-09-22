@@ -2,7 +2,9 @@
 title: "Lab4"
 author: "Juehan Wang"
 date: "9/17/2021"
-output: github_document
+output:
+  html_document:
+    df_print: paged
 always_allow_html: true
 ---
 
@@ -17,6 +19,7 @@ library(cowplot)
 library(leaflet)
 library(ggplot2)
 library(Hmisc)
+library(ggforce)
 ```
 
 ## 1. Read in the data
@@ -158,19 +161,32 @@ Wind speed is about 3.2($\pm4$) m/s in Southwest, 2.8($\pm3.2$) m/s in Northwest
 # Describe the graph and what you observe
 # Dew point temperature is…
 # Wind speed is…
+library(leaflet)
+
 temp.pal <- colorNumeric(c('darkgreen','goldenrod','brown'), domain=met_avg$rh)
 
 leaflet(met_avg) %>%
-  addProviderTiles('CartoDB.Positron') %>%
-  addCircles(
-    lat = ~lat, lng=~lon,
-                                                  # HERE IS OUR PAL!
-    label = ~paste0(round(rh,2), ' rh'), color = ~ temp.pal(rh),
-    opacity = 1, fillOpacity = 1, radius = 500
-    ) %>%
-  # And a pretty legend
-  addLegend('bottomleft', pal=temp.pal, values=met_avg$rh,
-          title='Temperature, C', opacity=1)
+   addProviderTiles('CartoDB.Positron') %>%
+   addCircles(
+   lat = ~lat, lng=~lon,
+                                                
+   label = ~paste0(round(rh,2), ' rh'), color = ~ temp.pal(rh),
+   opacity = 1, fillOpacity = 1, radius = 500
+     ) %>%
+   # And a pretty legend
+   addLegend('bottomleft', pal=temp.pal, values=met_avg$rh,
+           title='Temperature, C', opacity=1)
 ```
 
 There is an obvious trend of increasing in rh from the east to the west in the US, and rh is also higher along the coastline. Rh in the east is higher than 60 while it is mostly lower than 60 in the west.
+
+## 8. Use a ggplot extension
+
+```{r ggforce}
+# Pick and extension (except cowplot) from here and make a plot of your choice using the met data (or met_avg)
+# Might want to try examples that come with the extension first (e.g. ggtech, gganimate, ggforce)
+ggplot(met_avg, aes(wind.sp, dew.point, colour = region)) +
+  geom_point() +
+  facet_zoom(y = region == "Southeast")
+```
+
