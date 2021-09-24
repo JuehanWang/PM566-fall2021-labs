@@ -3,9 +3,16 @@ title: "Lab4"
 author: "Juehan Wang"
 date: "9/17/2021"
 output:
-  html_document:
-    df_print: paged
-always_allow_html: true
+#  html_document:
+#    df_print: paged
+#always_allow_html: true
+    html_document:
+      toc: yes 
+      toc_float: yes 
+      keep_md: yes
+    github_document:
+      keep_html: false
+      html_preview: false
 ---
 
 ```{r setup, include=FALSE}
