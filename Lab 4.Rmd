@@ -2,17 +2,20 @@
 title: "Lab4"
 author: "Juehan Wang"
 date: "9/17/2021"
-output:
-#  html_document:
-#    df_print: paged
+#output:
+#    html_document:
+#      toc: yes 
+#      toc_float: yes 
+#      keep_md: yes
+#    github_document:
+#      keep_html: true
+#      html_preview: false
 #always_allow_html: true
-    html_document:
-      toc: yes 
-      toc_float: yes 
-      keep_md: yes
-    github_document:
-      keep_html: false
-      html_preview: false
+output:
+  github_document:
+    html_preview: false
+  html_document: false
+always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
@@ -23,6 +26,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(data.table)
 library(cowplot)
+library(knitr)
 library(leaflet)
 library(ggplot2)
 library(Hmisc)
@@ -168,11 +172,11 @@ Wind speed is about 3.2($\pm4$) m/s in Southwest, 2.8($\pm3.2$) m/s in Northwest
 # Describe the graph and what you observe
 # Dew point temperature is…
 # Wind speed is…
-library(leaflet)
 
 temp.pal <- colorNumeric(c('darkgreen','goldenrod','brown'), domain=met_avg$rh)
 
-leaflet(met_avg) %>%
+if (knitr::is_html_output()) {
+  leaflet(met_avg) %>%
    addProviderTiles('CartoDB.Positron') %>%
    addCircles(
    lat = ~lat, lng=~lon,
@@ -183,6 +187,9 @@ leaflet(met_avg) %>%
    # And a pretty legend
    addLegend('bottomleft', pal=temp.pal, values=met_avg$rh,
            title='Temperature, C', opacity=1)
+} else {
+  message("Sorry! No HTML.")
+}
 ```
 
 There is an obvious trend of increasing in rh from the east to the west in the US, and rh is also higher along the coastline. Rh in the east is higher than 60 while it is mostly lower than 60 in the west.
