@@ -183,7 +183,7 @@ station_averages_rep <- station_averages_rep %>% mutate(eudist_sum = rowSums(cbi
 
 station_averages_rep <- station_averages_rep[order(eudist_sum,lat)]; station_averages_rep
 station_averages_rep <- station_averages_rep %>% group_by(STATE) %>% filter(row_number(STATE) == 1)
-station_averages_rep[-c(1:9,11:14), c("USAFID","STATE","eudist_sum")]
+station_averages_rep_table <- station_averages_rep[-c(1:9,11:14), c("USAFID","STATE","eudist_sum")]; station_averages_rep_table
 ```
 
 Finally, we get the most representative, the median, station per state.
@@ -222,10 +222,42 @@ station_midpoint[, eudist_lat_lon := sqrt(
 ```{r midpoint-stations}
 station_midpoint <- station_midpoint[order(station_midpoint$eudist_lat_lon)]
 station_midpoint <- station_midpoint %>% group_by(STATE) %>% filter(row_number(STATE) == 1); station_midpoint
-station_midpoint[, c("USAFID","STATE","eudist_lat_lon")]
+station_midpoint_table <- station_midpoint[, c("USAFID","STATE","eudist_lat_lon")]; station_midpoint_table
 ```
 
-Finally, we get the station that is closest to the mid-point of the state.
+Therefore, we get the station that is closest to the mid-point of the state.
+
+```{r figure}
+# median_temp_station
+# median_wind.sp_station
+# median_atm.press_station
+# station_averages_rep_table
+# station_midpoint_table
+
+stations <- unique(c(median_temp_station$USAFID,median_wind.sp_station$USAFID,median_atm.press_station$USAFID,station_averages_rep_table$USAFID,station_midpoint_table$USAFID))
+
+met_stations <- distinct(subset(met, USAFID %in% c(stations))[,c("USAFID","lat","lon")])
+
+if (knitr::is_html_output()) {
+  leaflet(met_stations) %>%
+   addProviderTiles('CartoDB.Positron') %>%
+   addCircles(
+   lat = ~lat, lng=~lon,
+                                                
+   #label = ~paste0(round(rh,2), ' rh'),
+   #color = ~ temp.pal(rh),
+   opacity = 1, fillOpacity = 1, radius = 500
+     ) %>%
+   # And a pretty legend
+   addLegend('bottomleft', pal=temp.pal, values=met_avg$rh,
+           title='Temperature, C', opacity=1)
+} else {
+  message("Sorry! No HTML.")
+}
+```
+
+
+
 
 ### Question 4: Means of means
 
@@ -274,4 +306,3 @@ tab <- met[, .(
 
 knitr::kable(tab)
 ```
-
