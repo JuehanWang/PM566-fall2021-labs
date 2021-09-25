@@ -292,7 +292,7 @@ Number of states included, and
 Mean temperature, wind-speed, and atmospheric pressure.
 All by the levels described before.
 
-```{r}
+```{r catogories}
 met[, state_temp := mean(temp, na.rm = TRUE), by = STATE]
 met[, temp_cat := fifelse(
   state_temp < 20, "low-temp",
@@ -302,13 +302,13 @@ met[, temp_cat := fifelse(
 
 Let's make sure that we don't have NAs.
 
-```{r}
+```{r check-NA}
 table(met$temp_cat, useNA = "always")
 ```
 
 Now, let's summarize.
 
-```{r}
+```{r summarize-table}
 tab <- met[, .(
   N_entries = .N,
   N_entries_NA = sum(is.na(temp_cat)),
