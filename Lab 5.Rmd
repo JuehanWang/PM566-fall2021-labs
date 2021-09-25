@@ -21,6 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(data.table)
 library(dplyr)
 library(ggplot2)
+library(leaflet)
 ```
 
 ## Setup in R
@@ -234,30 +235,46 @@ Therefore, we get the station that is closest to the mid-point of the state.
 # station_averages_rep_table
 # station_midpoint_table
 
-stations <- unique(c(median_temp_station$USAFID,median_wind.sp_station$USAFID,median_atm.press_station$USAFID,station_averages_rep_table$USAFID,station_midpoint_table$USAFID))
+stations_q1 <- unique(c(median_temp_station$USAFID,median_wind.sp_station$USAFID,median_atm.press_station$USAFID))
+stations_q2 <- unique(station_averages_rep_table$USAFID)
+stations_q3 <- unique(station_midpoint_table$USAFID)
 
-met_stations <- distinct(subset(met, USAFID %in% c(stations))[,c("USAFID","lat","lon")])
+met_stations_q1 <- distinct(subset(met, USAFID %in% c(stations_q1))[,c("USAFID","lat","lon")])
+  met_stations_q1 <- met_stations_q1[order(USAFID,lat)]
+  met_stations_q1 <- met_stations_q1 %>% group_by(USAFID) %>% filter(row_number(USAFID) == 1)
+  met_stations_q1$q <- "1"
+met_stations_q2 <- distinct(subset(met, USAFID %in% c(stations_q2))[,c("USAFID","lat","lon")])
+  met_stations_q2 <- met_stations_q2[order(USAFID,lat)]
+  met_stations_q2 <- met_stations_q2 %>% group_by(USAFID) %>% filter(row_number(USAFID) == 1)
+  met_stations_q2$q <- "2"
+met_stations_q3 <- distinct(subset(met, USAFID %in% c(stations_q3))[,c("USAFID","lat","lon")])
+  met_stations_q3 <- met_stations_q3[order(USAFID,lat)]
+  met_stations_q3 <- met_stations_q3 %>% group_by(USAFID) %>% filter(row_number(USAFID) == 1)
+  met_stations_q3$q <- "3"
+met_stations <- rbind(met_stations_q1,met_stations_q2,met_stations_q3)
 
 if (knitr::is_html_output()) {
   leaflet(met_stations) %>%
-   addProviderTiles('CartoDB.Positron') %>%
-   addCircles(
-   lat = ~lat, lng=~lon,
-                                                
-   #label = ~paste0(round(rh,2), ' rh'),
-   #color = ~ temp.pal(rh),
-   opacity = 1, fillOpacity = 1, radius = 500
-     ) %>%
-   # And a pretty legend
-   addLegend('bottomleft', pal=temp.pal, values=met_avg$rh,
-           title='Temperature, C', opacity=1)
+    addProviderTiles('CartoDB.Positron') %>% 
+    addCircles(
+      data = subset(met_stations, q == 1),
+      lat = ~ subset(met_stations, q == 1)$lat, lng = ~ subset(met_stations, q == 1)$lon,
+      popup = "median stations", opacity = 1, fillOpacity = 1, radius = 400, color = "red"
+      ) %>%
+    addCircles(
+      data = subset(met_stations, q == 2),
+      lat = ~ subset(met_stations, q == 2)$lat, lng = ~ subset(met_stations, q == 2)$lon,
+      popup = "average stations", opacity = 1, fillOpacity = 1, radius = 400, color = "blue"
+      ) %>%
+    addCircles(
+      data = subset(met_stations, q == 3),
+      lat = ~ subset(met_stations, q == 3)$lat, lng = ~ subset(met_stations, q == 3)$lon,
+      popup = "mid point stations", opacity= 1 , fillOpacity = 1, radius = 400, color = "green"
+      )
 } else {
   message("Sorry! No HTML.")
 }
 ```
-
-
-
 
 ### Question 4: Means of means
 
