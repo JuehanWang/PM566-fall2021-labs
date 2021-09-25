@@ -228,17 +228,13 @@ station_midpoint_table <- station_midpoint[, c("USAFID","STATE","eudist_lat_lon"
 
 Therefore, we get the station that is closest to the mid-point of the state.
 
-```{r figure}
-# median_temp_station
-# median_wind.sp_station
-# median_atm.press_station
-# station_averages_rep_table
-# station_midpoint_table
-
+```{r identified-stations}
+# get identified stations ID in the three questions
 stations_q1 <- unique(c(median_temp_station$USAFID,median_wind.sp_station$USAFID,median_atm.press_station$USAFID))
 stations_q2 <- unique(station_averages_rep_table$USAFID)
 stations_q3 <- unique(station_midpoint_table$USAFID)
 
+# get latitude and longitude of the identified stations
 met_stations_q1 <- distinct(subset(met, USAFID %in% c(stations_q1))[,c("USAFID","lat","lon")])
   met_stations_q1 <- met_stations_q1[order(USAFID,lat)]
   met_stations_q1 <- met_stations_q1 %>% group_by(USAFID) %>% filter(row_number(USAFID) == 1)
@@ -252,7 +248,9 @@ met_stations_q3 <- distinct(subset(met, USAFID %in% c(stations_q3))[,c("USAFID",
   met_stations_q3 <- met_stations_q3 %>% group_by(USAFID) %>% filter(row_number(USAFID) == 1)
   met_stations_q3$q <- "3"
 met_stations <- rbind(met_stations_q1,met_stations_q2,met_stations_q3)
+```
 
+```{r figure}
 if (knitr::is_html_output()) {
   leaflet(met_stations) %>%
     addProviderTiles('CartoDB.Positron') %>% 
