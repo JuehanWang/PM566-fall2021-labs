@@ -179,14 +179,15 @@ bigrams %>%
 
 Which words are most used in each of the specialties. you can use group_by() and top_n() from dplyr to have the calculations be done within each specialty. Remember to remove stopwords. How about the most 5 used words?
 
-```{r}
+```{r top-per-specialty}
 mtsamples %>%
-  unnest_tokens(medical_specialty, medical_specialty) %>%
-  count(medical_specialty, X) %>%
+  unnest_tokens(word, input = transcription) %>%
   group_by(medical_specialty) %>%
+  count(word, sort = TRUE) %>%
+  filter(!(word %in% stop_words$word) & !grepl("^[0-9]+$", word)) %>%
   top_n(5) %>%
-  bind_tf_idf(medical_specialty, X, n) %>%
-  arrange(desc(tf_idf))
+  arrange(medical_specialty, n) %>%
+  knitr::kable()
 ```
 
 
