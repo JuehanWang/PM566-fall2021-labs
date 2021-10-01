@@ -1,0 +1,72 @@
+---
+title: "Lab 5"
+author: "Juehan Wang"
+date: "9/24/2021"
+output:
+    html_document:
+      toc: yes 
+      toc_float: yes 
+      keep_md: yes
+    github_document:
+      keep_html: true
+      html_preview: false
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(data.table)
+library(tidyverse)
+library(tidytext)
+library(tibble)
+library(dplyr)
+```
+
+First, download the data.
+
+```{r get-data}
+fn <- "mtsamples.csv"
+if (!file.exists(fn))
+  download.file("https://raw.githubusercontent.com/USCbiostats/data-science-data/master/00_mtsamples/mtsamples.csv", destfile = fn)
+
+mtsamples<-read.csv(fn)
+mtsamples<-as_tibble(mtsamples)
+```
+
+### Question 1: What specialties do we have?
+
+We can use count() from dplyr to figure out how many different categories do we have? Are these categories related? overlapping? evenly distributed?
+
+```{r dist-of-specialists}
+specialties <- mtsamples %>%
+  count(medical_specialty, sort = TRUE)
+```
+
+There are `r nrow(specialties)` specialties. Let's take a look at the distributions.
+
+```{r}
+ggplot(mtsamples, aes(x = medical_specialty)) +
+  geom_histogram(stat = "count") +
+  coord_flip()
+
+specialties %>%
+  arrange(desc(n)) %>%
+  top_n(n, 15) %>%
+  knitr::kable()
+```
+
+These are not evenly (uniformly) distributed.
+
+
+
+
+
+
+
+
+
+
+
