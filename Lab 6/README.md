@@ -158,6 +158,26 @@ Bonus points if you remove numbers as well
 What do we see know that we have removed stop words? Does it give us a better idea of what the text is about?
 
 
+```r
+# remove stop words in the plot
+mtsamples %>%
+  unnest_tokens(output = word, input = transcription) %>%
+  count(word, sort = TRUE) %>%
+  anti_join(stop_words, by = "word") %>%
+  top_n(20) %>%
+  ggplot(aes(x = n, y = fct_reorder(word,n))) +
+    geom_col()
+```
+
+```
+## Selecting by n
+```
+
+![](README_files/figure-html/token-trans-wo-stop-1.png)<!-- -->
+
+
+
+
 
 
 

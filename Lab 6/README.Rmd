@@ -88,16 +88,28 @@ The word "patient" seems to be important (duh!), but we observe a lot of stopwor
 
 ### Question 3
 
-Redo visualization but remove stopwords before
 
-Bonus points if you remove numbers as well
 
 What do we see know that we have removed stop words? Does it give us a better idea of what the text is about?
+
+```{r token-trans-wo-stop, cache=TRUE}
+# Redo visualization but remove stopwords before
+mtsamples %>%
+  unnest_tokens(output = word, input = transcription) %>%
+  count(word, sort = TRUE) %>%
+  anti_join(stop_words, by = "word") %>%
+  top_n(20) %>%
+  ggplot(aes(x = n, y = fct_reorder(word,n))) +
+    geom_col()
+```
+
+```{r}
+# Bonus points if you remove numbers as well
+```
 
 ```{r}
 
 ```
-
 
 
 
