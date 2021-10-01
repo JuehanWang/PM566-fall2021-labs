@@ -152,7 +152,7 @@ bigrams %>%
 
 # after
 bigrams %>%
-  filter(w1 == "status") %>%
+  filter(w2 == "status") %>%
   select(w1,w2) %>%
   count(w1, sort = TRUE)
 ```
@@ -168,7 +168,7 @@ bigrams %>%
   knitr::kable(caption = "Words AFTER 'status'")
 
 bigrams %>%
-  filter(w1 == "status") %>%
+  filter(w2 == "status") %>%
   filter(!(w1 %in% stop_words$word) & !grepl(pattern = "^[0-9]+$", w1)) %>%
   count(w1, sort = TRUE) %>%
   top_n(10) %>%

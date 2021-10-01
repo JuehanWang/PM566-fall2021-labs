@@ -531,13 +531,23 @@ bigrams %&gt;%
 ## # … with 88 more rows</code></pre>
 <pre class="r"><code># after
 bigrams %&gt;%
-  filter(w1 == &quot;status&quot;) %&gt;%
+  filter(w2 == &quot;status&quot;) %&gt;%
   select(w1,w2) %&gt;%
   count(w1, sort = TRUE)</code></pre>
-<pre><code>## # A tibble: 1 × 2
-##   w1         n
-##   &lt;chr&gt;  &lt;int&gt;
-## 1 status  1384</code></pre>
+<pre><code>## # A tibble: 210 × 2
+##    w1              n
+##    &lt;chr&gt;       &lt;int&gt;
+##  1 mental        212
+##  2 is             88
+##  3 vascular       67
+##  4 disease        65
+##  5 2              40
+##  6 3              33
+##  7 performance    27
+##  8 1              24
+##  9 cancer         24
+## 10 diagnosis      20
+## # … with 200 more rows</code></pre>
 <p>Since we are looking at single words again, it is a good idea to treat these as single tokens. So let’s rename the stopwords and the numbers.</p>
 <pre class="r"><code>bigrams %&gt;%
   filter(w1 == &quot;status&quot;) %&gt;%
@@ -598,7 +608,7 @@ bigrams %&gt;%
 </tbody>
 </table>
 <pre class="r"><code>bigrams %&gt;%
-  filter(w1 == &quot;status&quot;) %&gt;%
+  filter(w2 == &quot;status&quot;) %&gt;%
   filter(!(w1 %in% stop_words$word) &amp; !grepl(pattern = &quot;^[0-9]+$&quot;, w1)) %&gt;%
   count(w1, sort = TRUE) %&gt;%
   top_n(10) %&gt;%
@@ -614,8 +624,44 @@ bigrams %&gt;%
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">status</td>
-<td align="right">1384</td>
+<td align="left">mental</td>
+<td align="right">212</td>
+</tr>
+<tr class="even">
+<td align="left">vascular</td>
+<td align="right">67</td>
+</tr>
+<tr class="odd">
+<td align="left">disease</td>
+<td align="right">65</td>
+</tr>
+<tr class="even">
+<td align="left">performance</td>
+<td align="right">27</td>
+</tr>
+<tr class="odd">
+<td align="left">cancer</td>
+<td align="right">24</td>
+</tr>
+<tr class="even">
+<td align="left">diagnosis</td>
+<td align="right">20</td>
+</tr>
+<tr class="odd">
+<td align="left">pain</td>
+<td align="right">18</td>
+</tr>
+<tr class="even">
+<td align="left">respiratory</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">cholesterol</td>
+<td align="right">14</td>
+</tr>
+<tr class="even">
+<td align="left">marital</td>
+<td align="right">14</td>
 </tr>
 </tbody>
 </table>

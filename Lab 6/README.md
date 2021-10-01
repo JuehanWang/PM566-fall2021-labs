@@ -256,16 +256,26 @@ bigrams %>%
 ```r
 # after
 bigrams %>%
-  filter(w1 == "status") %>%
+  filter(w2 == "status") %>%
   select(w1,w2) %>%
   count(w1, sort = TRUE)
 ```
 
 ```
-## # A tibble: 1 × 2
-##   w1         n
-##   <chr>  <int>
-## 1 status  1384
+## # A tibble: 210 × 2
+##    w1              n
+##    <chr>       <int>
+##  1 mental        212
+##  2 is             88
+##  3 vascular       67
+##  4 disease        65
+##  5 2              40
+##  6 3              33
+##  7 performance    27
+##  8 1              24
+##  9 cancer         24
+## 10 diagnosis      20
+## # … with 200 more rows
 ```
 
 Since we are looking at single words again, it is a good idea to treat these as single tokens. So let's rename the stopwords and the numbers.
@@ -303,7 +313,7 @@ Table: Words AFTER 'status'
 
 ```r
 bigrams %>%
-  filter(w1 == "status") %>%
+  filter(w2 == "status") %>%
   filter(!(w1 %in% stop_words$word) & !grepl(pattern = "^[0-9]+$", w1)) %>%
   count(w1, sort = TRUE) %>%
   top_n(10) %>%
@@ -318,9 +328,18 @@ bigrams %>%
 
 Table: Words BEFORE 'status'
 
-|w1     |    n|
-|:------|----:|
-|status | 1384|
+|w1          |   n|
+|:-----------|---:|
+|mental      | 212|
+|vascular    |  67|
+|disease     |  65|
+|performance |  27|
+|cancer      |  24|
+|diagnosis   |  20|
+|pain        |  18|
+|respiratory |  16|
+|cholesterol |  14|
+|marital     |  14|
 
 ### Question 6
 
