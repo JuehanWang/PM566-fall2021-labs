@@ -25,6 +25,12 @@ library(tibble)
 library(dplyr)
 ```
 
+Some Notes:
+
+  Add README files -- git add "Lab 6/README*"
+  
+  Remove cache files before committing -- git rm --cache "Lab 6/README_cache*"
+
 First, download the data.
 
 ```{r get-data}
@@ -84,7 +90,7 @@ mtsamples %>%
     geom_col()
 ```
 
-The word "patient" seems to be important (duh!), but we observe a lot of stopwords.
+The word "status" seems to be important (duh!), but we observe a lot of stopwords.
 
 ### Question 3
 
@@ -133,23 +139,54 @@ Now some phrases start to show up, e.g. "tolerated the procedure", "prepped and 
 
 Using the results you got from questions 4. Pick a word and count the words that appears after and before it.
 
+```{r status, cache=TRUE, warning=FALSE}
+bigrams <- mtsamples %>%
+  unnest_ngrams(output = bigram, input = transcription, n = 3) %>%
+  separate(bigram, into = c("w1", "w2"), sep = " ")
 
+# before
+bigrams %>%
+  filter(w1 == "status") %>%
+  select(w1,w2) %>%
+  count(w2, sort = TRUE)
 
-```{r}
-# use background, and see the distributions
-
+# after
+bigrams %>%
+  filter(w1 == "status") %>%
+  select(w1,w2) %>%
+  count(w1, sort = TRUE)
 ```
 
+Since we are looking at single words again, it is a good idea to treat these as single tokens. So let's rename the stopwords and the numbers.
 
+```{r status-wo-stop}
+bigrams %>%
+  filter(w1 == "status") %>%
+  filter(!(w2 %in% stop_words$word) & !grepl(pattern = "^[0-9]+$", w2)) %>%
+  count(w2, sort = TRUE) %>%
+  top_n(10) %>%
+  knitr::kable(caption = "Words AFTER 'status'")
 
-
+bigrams %>%
+  filter(w1 == "status") %>%
+  filter(!(w1 %in% stop_words$word) & !grepl(pattern = "^[0-9]+$", w1)) %>%
+  count(w1, sort = TRUE) %>%
+  top_n(10) %>%
+  knitr::kable(caption = "Words BEFORE 'status'")
+```
 
 ### Question 6
 
 Which words are most used in each of the specialties. you can use group_by() and top_n() from dplyr to have the calculations be done within each specialty. Remember to remove stopwords. How about the most 5 used words?
 
 ```{r}
-
+mtsamples %>%
+  unnest_tokens(medical_specialty, medical_specialty) %>%
+  count(medical_specialty, X) %>%
+  group_by(medical_specialty) %>%
+  top_n(5) %>%
+  bind_tf_idf(medical_specialty, X, n) %>%
+  arrange(desc(tf_idf))
 ```
 
 

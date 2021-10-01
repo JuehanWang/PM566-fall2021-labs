@@ -17,6 +17,12 @@ always_allow_html: true
 
 
 
+Some Notes:
+
+  Add README files -- git add "Lab 6/README*"
+  
+  Remove cache files before committing -- git rm --cache "Lab 6/README_cache*"
+
 First, download the data.
 
 
@@ -147,7 +153,7 @@ mtsamples %>%
 
 ![](README_files/figure-html/token-trans-1.png)<!-- -->
 
-The word "patient" seems to be important (duh!), but we observe a lot of stopwords.
+The word "status" seems to be important (duh!), but we observe a lot of stopwords.
 
 ### Question 3
 
@@ -218,21 +224,140 @@ Now some phrases start to show up, e.g. "tolerated the procedure", "prepped and 
 Using the results you got from questions 4. Pick a word and count the words that appears after and before it.
 
 
+```r
+bigrams <- mtsamples %>%
+  unnest_ngrams(output = bigram, input = transcription, n = 3) %>%
+  separate(bigram, into = c("w1", "w2"), sep = " ")
+
+# before
+bigrams %>%
+  filter(w1 == "status") %>%
+  select(w1,w2) %>%
+  count(w2, sort = TRUE)
+```
+
+```
+## # A tibble: 98 × 2
+##    w2              n
+##    <chr>       <int>
+##  1 post          783
+##  2 intact         53
+##  3 and            43
+##  4 examination    43
+##  5 exam           39
+##  6 is             34
+##  7 was            27
+##  8 the            25
+##  9 at             17
+## 10 changes        17
+## # … with 88 more rows
+```
+
+```r
+# after
+bigrams %>%
+  filter(w1 == "status") %>%
+  select(w1,w2) %>%
+  count(w1, sort = TRUE)
+```
+
+```
+## # A tibble: 1 × 2
+##   w1         n
+##   <chr>  <int>
+## 1 status  1384
+```
+
+Since we are looking at single words again, it is a good idea to treat these as single tokens. So let's rename the stopwords and the numbers.
 
 
 ```r
-# use background, and see the distributions
+bigrams %>%
+  filter(w1 == "status") %>%
+  filter(!(w2 %in% stop_words$word) & !grepl(pattern = "^[0-9]+$", w2)) %>%
+  count(w2, sort = TRUE) %>%
+  top_n(10) %>%
+  knitr::kable(caption = "Words AFTER 'status'")
+```
+
+```
+## Selecting by n
 ```
 
 
 
+Table: Words AFTER 'status'
 
+|w2          |   n|
+|:-----------|---:|
+|post        | 783|
+|intact      |  53|
+|examination |  43|
+|exam        |  39|
+|change      |   9|
+|rbans       |   9|
+|epilepticus |   8|
+|married     |   8|
+|assessed    |   7|
+|history     |   7|
+
+```r
+bigrams %>%
+  filter(w1 == "status") %>%
+  filter(!(w1 %in% stop_words$word) & !grepl(pattern = "^[0-9]+$", w1)) %>%
+  count(w1, sort = TRUE) %>%
+  top_n(10) %>%
+  knitr::kable(caption = "Words BEFORE 'status'")
+```
+
+```
+## Selecting by n
+```
+
+
+
+Table: Words BEFORE 'status'
+
+|w1     |    n|
+|:------|----:|
+|status | 1384|
 
 ### Question 6
 
 Which words are most used in each of the specialties. you can use group_by() and top_n() from dplyr to have the calculations be done within each specialty. Remember to remove stopwords. How about the most 5 used words?
 
 
+```r
+mtsamples %>%
+  unnest_tokens(medical_specialty, medical_specialty) %>%
+  count(medical_specialty, X) %>%
+  group_by(medical_specialty) %>%
+  top_n(5) %>%
+  bind_tf_idf(medical_specialty, X, n) %>%
+  arrange(desc(tf_idf))
+```
+
+```
+## Selecting by n
+```
+
+```
+## # A tibble: 8,762 × 6
+## # Groups:   medical_specialty [69]
+##    medical_specialty     X     n    tf   idf tf_idf
+##    <chr>             <int> <int> <dbl> <dbl>  <dbl>
+##  1 autopsy            4981     1     1  6.44   6.44
+##  2 autopsy            4983     1     1  6.44   6.44
+##  3 autopsy            4986     1     1  6.44   6.44
+##  4 autopsy            4987     1     1  6.44   6.44
+##  5 autopsy            4988     1     1  6.44   6.44
+##  6 autopsy            4990     1     1  6.44   6.44
+##  7 autopsy            4991     1     1  6.44   6.44
+##  8 autopsy            4992     1     1  6.44   6.44
+##  9 rheumatology       1475     1     1  6.21   6.21
+## 10 rheumatology       1477     1     1  6.21   6.21
+## # … with 8,752 more rows
+```
 
 
 
