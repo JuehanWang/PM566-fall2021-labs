@@ -27,7 +27,7 @@ library(dplyr)
 
 Notes:
 
-  Add README files -- git add c
+  Add README files -- git add "Lab 6/README*"
   
   Remove cache files before committing -- git rm --cache "Lab 6/README_cache*"
   
@@ -61,7 +61,7 @@ There are `r nrow(specialties)` specialties. Let's take a look at the distributi
 
 ```{r dist1}
 ggplot(mtsamples, aes(x = medical_specialty)) +
-  geom_histogram(stat = "count") +
+  geom_histogram(stat = "count") + 
   coord_flip()
 
 specialties %>%
@@ -71,7 +71,7 @@ specialties %>%
 ```
 
 ```{r dist2}
-ggplot(specialties, aes(x = n, y = fct_reorder(medical_specialty,n))) +
+ggplot(specialties, aes(x = n, y = fct_reorder(medical_specialty,n))) + 
   geom_col()
 ```
 
@@ -92,7 +92,7 @@ mtsamples %>%
   unnest_tokens(output = word, input = transcription) %>%
   count(word, sort = TRUE) %>%
   top_n(20) %>%
-  ggplot(aes(x = n, y = fct_reorder(word,n))) +
+  ggplot(aes(x = n, y = fct_reorder(word,n))) + 
     geom_col()
 ```
 
@@ -111,7 +111,7 @@ mtsamples %>%
   # using regular expressions to remove numbers
   filter(!grepl(pattern = "^[0-9]+$", x = word)) %>%
   top_n(20) %>%
-  ggplot(aes(x = n, y = fct_reorder(word,n))) +
+  ggplot(aes(x = n, y = fct_reorder(word,n))) + 
     geom_col()
 ```
 
@@ -124,7 +124,7 @@ mtsamples %>%
   unnest_ngrams(output = bigram, input = transcription, n = 2) %>%
   count(bigram, sort = TRUE) %>%
   top_n(20) %>%
-  ggplot(aes(x = n, y = fct_reorder(bigram,n))) +
+  ggplot(aes(x = n, y = fct_reorder(bigram,n))) + 
     geom_col()
 ```
 
@@ -135,7 +135,7 @@ mtsamples %>%
   unnest_ngrams(output = trigram, input = transcription, n = 3) %>%
   count(trigram, sort = TRUE) %>%
   top_n(20) %>%
-  ggplot(aes(x = n, y = fct_reorder(trigram,n))) +
+  ggplot(aes(x = n, y = fct_reorder(trigram,n))) + 
     geom_col()
 ```
 
@@ -195,4 +195,3 @@ mtsamples %>%
   arrange(medical_specialty, desc(n)) %>%
   knitr::kable()
 ```
-
