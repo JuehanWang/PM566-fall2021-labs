@@ -19,7 +19,7 @@ always_allow_html: true
 
 Notes:
 
-  Add README files -- git add "Lab 6/README*"
+  Add README files -- git add c
   
   Remove cache files before committing -- git rm --cache "Lab 6/README_cache*"
   
@@ -581,3 +581,4 @@ mtsamples %>%
 |Urology                       |procedure    |  306|
 |Urology                       |left         |  288|
 |Urology                       |history      |  196|
+

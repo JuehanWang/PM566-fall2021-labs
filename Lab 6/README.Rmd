@@ -27,7 +27,7 @@ library(dplyr)
 
 Notes:
 
-  Add README files -- git add "Lab 6/README*"
+  Add README files -- git add c
   
   Remove cache files before committing -- git rm --cache "Lab 6/README_cache*"
   
@@ -195,3 +195,4 @@ mtsamples %>%
   arrange(medical_specialty, desc(n)) %>%
   knitr::kable()
 ```
+
