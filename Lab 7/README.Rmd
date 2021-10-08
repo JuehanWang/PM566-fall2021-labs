@@ -88,5 +88,62 @@ ids <- httr::content(query_ids)
 
 The query will return an XML object, we can turn it into a character list to analyze the text directly with as.character(). Another way of processing the data could be using lists with the function xml2::as_list(). We will skip the latter for now.
 
+```{r as-list}
+ids_list <- xml2::as_list(ids)
+str(ids_list)
+```
+
 Take a look at the data, and continue with the next question (don’t forget to commit and push your results to your GitHub repo!).
+
+### Question 3: Get details about the articles
+
+The Ids are wrapped around text in the following way: <Id>... id number ...</Id>. we can use a regular expression that extract that information. Fill out the following lines of code:
+
+```{r}
+# Turn the result into a character vector
+ids <- as.character(ids)
+
+# Find all the ids 
+ids <- stringr::str_extract_all(ids, "<Id>[[:digit:]]+</Id>")[[1]]
+
+# Remove all the leading and trailing <Id> </Id>. Make use of "|"
+ids <- stringr::str_remove_all(ids, "</?Id>")
+ids <- stringr::str_remove_all(ids, "<Id>|</Id>")
+```
+
+With the ids in hand, we can now try to get the abstracts of the papers. As before, we will need to coerce the contents (results) to a list using:
+
+Baseline url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi
+
+Query parameters:
+
+db: pubmed
+
+id: A character with all the ids separated by comma, e.g., “1232131,546464,13131”
+
+retmax: 1000
+
+rettype: abstract
+
+Pro-tip: If you want GET() to take some element literal, wrap it around I() (as you would do in a formula in R). For example, the text "123,456" is replaced with "123%2C456". If you don’t want that behavior, you would need to do the following I("123,456").
+
+```{r}
+publications <- GET(
+  url   = "https://eutils.ncbi.nlm.nih.gov/",
+  path = "entrez/eutils/efetch.fcgi",
+  query = list(
+    db = "pubmed",
+    id = I(paste(ids, collapse = ",")),
+    retmax = 1000,
+    rettype = "abstract"
+    )
+)
+# Turning the output into character vector
+publications <- httr::content(publications)
+publications_txt <- as.character(publications)
+```
+
+With this in hand, we can now analyze the data. 
+
+
 
