@@ -53,9 +53,10 @@ stringr::str_extract(counts, "[[:digit:],]+")
 
     ## [1] "114,592"
 
-Question 2: Academic publications on COVID19 and Hawaii You need to
-query the following The parameters passed to the query are documented
-here.
+Question 2: Academic publications on COVID19 and Hawaii
+
+You need to query the following The parameters passed to the query are
+documented here.
 
 Use the function httr::GET() to make the following query:
 
@@ -65,3 +66,31 @@ Baseline URL:
 Query parameters:
 
 db: pubmed term: covid19 hawaii retmax: 1000
+
+``` r
+library(httr)
+query_ids <- GET(
+  url    = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
+  query  = list(db = "pubmed",
+  term   = "covid19 hawaii",
+  retmax = 1000)
+)
+# or
+query_ids <- GET(
+  url    = "https://eutils.ncbi.nlm.nih.gov/",
+  path   = "entrez/eutils/esearch.fcgi",
+  query  = list(db = "pubmed",
+  term   = "covid19 hawaii",
+  retmax = 1000)
+)
+# Extracting the content of the response of GET
+ids <- httr::content(query_ids)
+```
+
+The query will return an XML object, we can turn it into a character
+list to analyze the text directly with as.character(). Another way of
+processing the data could be using lists with the function
+xml2::as\_list(). We will skip the latter for now.
+
+Take a look at the data, and continue with the next question (don’t
+forget to commit and push your results to your GitHub repo!).
