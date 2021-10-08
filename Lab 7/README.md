@@ -65,7 +65,11 @@ Baseline URL:
 
 Query parameters:
 
-db: pubmed term: covid19 hawaii retmax: 1000
+db: pubmed
+
+term: covid19 hawaii
+
+retmax: 1000
 
 ``` r
 library(httr)

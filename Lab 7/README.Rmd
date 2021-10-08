@@ -63,7 +63,9 @@ Baseline URL: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi
 Query parameters:
 
 db: pubmed
+
 term: covid19 hawaii
+
 retmax: 1000
 
 ```{r hawaii}
