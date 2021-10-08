@@ -1,0 +1,16 @@
+---
+title: "Lab 7"
+author: "Juehan Wang"
+date: "10/8/2021"
+output: 
+  github_document: default
+  html_document:
+    html_preview: false
+  word_document: default
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
