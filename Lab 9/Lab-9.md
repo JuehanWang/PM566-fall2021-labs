@@ -88,9 +88,9 @@ microbenchmark::microbenchmark(
 
 ```
 ## Unit: microseconds
-##               expr      min       lq      mean   median       uq       max
-##     fun1(n = 1000) 4898.150 5246.873 7663.2969 5968.443 8239.108 19033.816
-##  fun1alt(n = 1000)  126.154  136.517  180.2863  151.559  166.884  2291.489
+##               expr      min       lq      mean    median       uq       max
+##     fun1(n = 1000) 4722.772 5311.885 7715.7729 6027.7460 8640.722 22502.346
+##  fun1alt(n = 1000)  125.839  136.269  175.7575  146.4615  159.828  2304.871
 ##  neval cld
 ##    100   b
 ##    100  a
@@ -140,12 +140,12 @@ microbenchmark::microbenchmark(
 
 ```
 ## Unit: relative
-##        expr      min       lq     mean   median       uq      max neval cld
-##     fun2(x) 12.01304 9.268255 8.314419 9.659178 8.586624 2.857046   100   b
-##  fun2alt(x)  1.00000 1.000000 1.000000 1.000000 1.000000 1.000000   100  a
+##        expr      min       lq     mean   median      uq      max neval cld
+##     fun2(x) 9.583481 8.672057 8.230536 8.656953 8.79258 4.101281   100   b
+##  fun2alt(x) 1.000000 1.000000 1.000000 1.000000 1.00000 1.000000   100  a
 ```
 
-# Problem 3: Parallelize everyhing
+# Problem 3: Parallelize everything
 
 We will now turn our attention to non-parametric bootstrapping. Among its many uses, non-parametric bootstrapping allow us to obtain confidence intervals for parameter estimates without relying on parametric assumptions.
 
@@ -163,10 +163,14 @@ my_boot <- function(dat, stat, R, ncpus = 1L) {
  
   # Making the cluster using `ncpus`
   # STEP 1: GOES HERE
+  cl <- makePSOCKcluster(ncpus)
+
   # STEP 2: GOES HERE
+  clusterSetRNGStream(cl, 123) #equivalent to `set.seed(123)`
+  clusterExport(cl, c("stat","dat","idx"), envir = environment())
   
     # STEP 3: THIS FUNCTION NEEDS TO BE REPLACES WITH parLapply
-  ans <- lapply(seq_len(R), function(i) {
+  ans <- parLapply(cl = cl, seq_len(R), function(i) {
     stat(dat[idx[,i], , drop=FALSE])
   })
   
@@ -174,6 +178,7 @@ my_boot <- function(dat, stat, R, ncpus = 1L) {
   ans <- do.call(rbind, ans)
   
   # STEP 4: GOES HERE
+  stopCluster(cl)
   
   ans
   
@@ -235,7 +240,7 @@ system.time(my_boot(dat = data.frame(x, y), my_stat, R = 4000, ncpus = 1L))
 
 ```
 ##    user  system elapsed 
-##   3.015   0.060   3.126
+##   0.062   0.016   3.153
 ```
 
 ```r
@@ -244,7 +249,7 @@ system.time(my_boot(dat = data.frame(x, y), my_stat, R = 4000, ncpus = 2L))
 
 ```
 ##    user  system elapsed 
-##   2.786   0.035   2.857
+##   0.079   0.013   1.675
 ```
 
 # Problem 4: Compile this markdown document using Rscript

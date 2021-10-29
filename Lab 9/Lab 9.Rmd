@@ -19,6 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, include=FALSE}
 library(microbenchmark)
+library(parallel)
 ```
 
 # Learning goals
@@ -103,7 +104,7 @@ microbenchmark::microbenchmark(
 )
 ```
 
-# Problem 3: Parallelize everyhing
+# Problem 3: Parallelize everything
 
 We will now turn our attention to non-parametric bootstrapping. Among its many uses, non-parametric bootstrapping allow us to obtain confidence intervals for parameter estimates without relying on parametric assumptions.
 
@@ -120,10 +121,14 @@ my_boot <- function(dat, stat, R, ncpus = 1L) {
  
   # Making the cluster using `ncpus`
   # STEP 1: GOES HERE
+  cl <- makePSOCKcluster(ncpus)
+
   # STEP 2: GOES HERE
+  clusterSetRNGStream(cl, 123) #equivalent to `set.seed(123)`
+  clusterExport(cl, c("stat","dat","idx"), envir = environment())
   
     # STEP 3: THIS FUNCTION NEEDS TO BE REPLACES WITH parLapply
-  ans <- lapply(seq_len(R), function(i) {
+  ans <- parLapply(cl = cl, seq_len(R), function(i) {
     stat(dat[idx[,i], , drop=FALSE])
   })
   
@@ -131,6 +136,7 @@ my_boot <- function(dat, stat, R, ncpus = 1L) {
   ans <- do.call(rbind, ans)
   
   # STEP 4: GOES HERE
+  stopCluster(cl)
   
   ans
   
