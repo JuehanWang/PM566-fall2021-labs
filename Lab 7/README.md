@@ -36,6 +36,7 @@ website <- xml2::read_html("https://pubmed.ncbi.nlm.nih.gov/?term=sars-cov-2")
 
 # Finding the counts
 counts <- xml2::xml_find_first(website, "/html/body/main/div[9]/div[2]/div[2]/div[1]/span")
+  # Note: how to get this XPath: Directly right click on the number/word/place which you need to get the Xpath of, then cleck on the "inspect", it will automatically hightlight the Xpath you need. Then right click the line it hightlight, choose "copy -- copy full Xpath", finished.
 
 # Turning it into text
 # or xml2::xml_text(counts)
@@ -45,13 +46,13 @@ counts <- as.character(counts)
 stringr::str_extract(counts, "[0-9,]+")
 ```
 
-    ## [1] "114,592"
+    ## [1] "114,781"
 
 ``` r
 stringr::str_extract(counts, "[[:digit:],]+")
 ```
 
-    ## [1] "114,592"
+    ## [1] "114,781"
 
 Question 2: Academic publications on COVID19 and Hawaii
 
