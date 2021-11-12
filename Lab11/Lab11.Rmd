@@ -13,7 +13,7 @@ output:
 always_allow_html: true
 ---
 
-**See my lab output here**[**here**]https://ghcdn.rawgit.org/JuehanWang/PM566-fall2021-labs/main/Lab11/Lab11.html
+**See my lab output here**[**here**](https://ghcdn.rawgit.org/JuehanWang/PM566-fall2021-labs/main/Lab11/Lab11.html)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
